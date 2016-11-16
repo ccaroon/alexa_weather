@@ -1,0 +1,5 @@
+WeatherReport how's the weather
+WeatherReport what's the temperature
+WeatherReport what temperature it is
+WeatherReport what the weather's like
+WeatherReport about the weather

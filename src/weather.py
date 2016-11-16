@@ -3,7 +3,6 @@
 from __future__ import print_function
 import requests
 
-
 # --------------- Helpers that build all of the responses ----------------------
 
 def build_speechlet_response(title, output, reprompt_text, should_end_session):
@@ -43,27 +42,15 @@ def get_temp():
     
     return tempF
 
-def handle_weather(intent, session):
-
-    card_title = intent['name']
-    tempF = get_temp()
-    
-    speech_output = "The current temperature is " + str(tempF) + " degrees."
-
-    return build_response(
-        None, 
-        build_speechlet_response(card_title, speech_output, "", True)
-    )
-
 # ---------------------------- Skill Stuffs ------------------------------------
 def on_session_started(request, session):
-    pass
+    print("on_session_started")
 
 def on_session_ended(request, session):
-    pass
+    print("on_session_ended")
 
 def on_launch(request, session):
-    pass
+    print("on_launch")
     
 def on_intent(request, session):
 
@@ -71,7 +58,7 @@ def on_intent(request, session):
     intent_name = request['intent']['name']
 
     # Dispatch to your skill's intent handlers
-    if intent_name == "WhatsTheTemperature":
+    if intent_name == "WeatherReport":
         return handle_weather(intent, session)
     elif intent_name == "AMAZON.HelpIntent":
         return handle_help()
@@ -80,8 +67,20 @@ def on_intent(request, session):
     else:
         raise ValueError("Invalid intent")
 
+# ---------------------------- Handlers ------------------------------------
+def handle_weather(intent, session):
+    card_title = intent['name']
+    tempF = get_temp()
+
+    speech_output = "The current temperature is " + str(tempF) + " degrees."
+
+    return build_response(
+        None,
+        build_speechlet_response(card_title, speech_output, "", True)
+    )
+
 def handle_help():
-    pass
+    print("handle_help")
 
 def handle_session_ended():
     card_title = "Session Ended"
@@ -117,7 +116,7 @@ if __name__ == "__main__":
         'request': {
             'type': "IntentRequest",
             'intent': {
-                'name': "WhatsTheTemperature"
+                'name': "WeatherReport"
             }
         },
         'session': {
