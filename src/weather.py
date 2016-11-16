@@ -36,10 +36,10 @@ def build_response(session_attributes, speechlet_response):
 # ----------------------- Do some REAL work ------------------------------------
 def get_temp():
     resp = requests.get("https://api.particle.io/v1/devices/230040001847343338333633/tempF?access_token=7b17fde278758834f69736682aedef21c8fb4cce")
-    
+
     data = resp.json()
     tempF = round(data['result'], 1)
-    
+
     return tempF
 
 # ---------------------------- Skill Stuffs ------------------------------------
@@ -51,7 +51,7 @@ def on_session_ended(request, session):
 
 def on_launch(request, session):
     print("on_launch")
-    
+
 def on_intent(request, session):
 
     intent = request['intent']
@@ -90,15 +90,14 @@ def handle_session_ended():
     return build_response({}, speechlet_response)
 
 
-# --------------------------------- Main ---------------------------------------
+# ------------------------------ Lambda Main -----------------------------------
 def weather_handler(event, context):
-    # TODO: input skill id
-    # if (event['session']['application']['applicationId'] != "amzn1.echo-sdk-ams.app.[unique-value-here]"):
-    #     raise ValueError("Invalid Application ID")
+
+    if (event['session']['application']['applicationId'] != "amzn1.ask.skill.595fb06b-9e5b-481e-bfd1-c137e1d5023c"):
+        raise ValueError("Invalid Application ID")
 
     if event['session']['new']:
         on_session_started(event['request'], event['session'])
-
 
     if event['request']['type'] == "LaunchRequest":
         return on_launch(event['request'], event['session'])
@@ -107,7 +106,7 @@ def weather_handler(event, context):
     elif event['request']['type'] == "SessionEndedRequest":
         return on_session_ended(event['request'], event['session'])
 
-    
+# ---------------------------------- Main --------------------------------------
 if __name__ == "__main__":
     # t = get_temp()
     # print(t)
@@ -120,9 +119,12 @@ if __name__ == "__main__":
             }
         },
         'session': {
-            'new': True
+            'new': True,
+            'application': {
+                'applicationId': 'amzn1.ask.skill.595fb06b-9e5b-481e-bfd1-c137e1d5023c'
+            }
         }
     }
-    
+
     w = weather_handler(event, {})
     print(w)
