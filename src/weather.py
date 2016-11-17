@@ -78,7 +78,7 @@ def on_intent(request, session):
 
     # Dispatch to your skill's intent handlers
     if intent_name == "WeatherReport":
-        return handle_weather(intent, session)
+        return handle_weather_report(intent, session)
     elif intent_name == "AMAZON.HelpIntent":
         return handle_help()
     elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
@@ -87,14 +87,60 @@ def on_intent(request, session):
         raise ValueError("Invalid intent")
 
 # ---------------------------- Handlers ------------------------------------
-def handle_weather(intent, session):
+def handle_weather_report(intent, session):
     card_title = intent['name']
+
+    aspect = intent['slots']['aspect']['value']
+
+    speech_output = ""
+    if aspect == "weather":
+        speech_output = handle_weather()
+    elif aspect == "temperature":
+        speech_output = handle_temperature()
+    elif aspect == "rainfall":
+        speech_output = handle_rainfall()
+    elif aspect == "moon phase":
+        speech_output = handle_moon_phase()
+    else:
+        speech_output = "The WeatherStation does not know anything about " + str(aspect)
+
+    return build_response(
+        None,
+        build_speechlet_response(card_title, speech_output, "", True)
+    )
+
+def handle_weather():
+    weather_statement = handle_temperature()
+
+    rain = get_rain_per_hour()
+    if rain >= 0.25:
+        weather_statement += " It looks like it's been raining."
+    
+    moon_statement = handle_moon_phase()    
+    weather_statement += " " + moon_statement
+    
+    return (weather_statement)
+    
+def handle_temperature():
     tempF = get_tempF()
-    rain  = get_rain_per_hour()
-    moon  = get_moon_illumination()
     
-    speech_output = "The current temperature is " + str(tempF) + " degrees."
+    temperature_statement = "The current temperature is " + str(tempF) + " degrees."
     
+    return temperature_statement
+
+def handle_rainfall():
+    rain = get_rain_per_hour()
+    
+    if rain <= 0.25:
+        rain_statement = "There has been no rainfall in the last hour."
+    else:
+        rain_statement = "It has rained %0.2f inches in the last hour." % (rain)
+        
+    return rain_statement
+    
+def handle_moon_phase():
+    moon = get_moon_illumination()
+
     moon_statement = ""
     # New Moon = 0%
     if moon <= 0.5:
@@ -112,15 +158,7 @@ def handle_weather(intent, session):
     elif moon > 99.5:
         moon_statement = "Beware the Full Moon."
 
-    if rain >= 0.25:
-        speech_output += " It looks like it's been raining."
-        
-    speech_output += " " + moon_statement
-
-    return build_response(
-        None,
-        build_speechlet_response(card_title, speech_output, "", True)
-    )
+    return moon_statement
 
 def handle_help():
     print("handle_help")
@@ -155,7 +193,13 @@ if __name__ == "__main__":
         'request': {
             'type': "IntentRequest",
             'intent': {
-                'name': "WeatherReport"
+                'name': "WeatherReport",
+                'slots': {
+                    'aspect': {
+                        'name': 'aspect',
+                        'value': None
+                    }
+                }
             }
         },
         'session': {
@@ -166,5 +210,9 @@ if __name__ == "__main__":
         }
     }
 
-    w = weather_handler(event, {})
-    print(w)
+    for v in ("weather", "temperature", "rainfall", "moon phase"):
+        print("=====>  %s <=====" % (v))
+        event['request']['intent']['slots']['aspect']['value'] = v
+        w = weather_handler(event, {})
+        print(w)
+        print()

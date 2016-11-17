@@ -1,0 +1,6 @@
+LIST_OF_ASPECTS
+---------------
+weather
+temperature
+rainfall
+moon phase
