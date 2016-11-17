@@ -3,6 +3,10 @@
 from __future__ import print_function
 import requests
 
+PARTICLE_API = "https://api.particle.io/v1/devices"
+DEVICE_ID = "230040001847343338333633"
+ACCESS_TOKEN = "7b17fde278758834f69736682aedef21c8fb4cce"
+
 # --------------- Helpers that build all of the responses ----------------------
 
 def build_speechlet_response(title, output, reprompt_text, should_end_session):
@@ -34,13 +38,28 @@ def build_response(session_attributes, speechlet_response):
     }
 
 # ----------------------- Do some REAL work ------------------------------------
-def get_temp():
-    resp = requests.get("https://api.particle.io/v1/devices/230040001847343338333633/tempF?access_token=7b17fde278758834f69736682aedef21c8fb4cce")
+def get_particle_variable(name):
+    resp = requests.get("%s/%s/%s?access_token=%s" % (PARTICLE_API, DEVICE_ID, name, ACCESS_TOKEN))
+    
+    if resp.raise_for_status() == None:
+        data = resp.json()
 
-    data = resp.json()
-    tempF = round(data['result'], 1)
+    if data['error'] != None:
+        raise ValueError("Failed to retrieve value for %s: %s" % (name, data['error']))
 
-    return tempF
+    return(data['result'])
+
+def get_tempF():
+    tempF = get_particle_variable("tempF")
+    return round(tempF, 1)
+    
+def get_rain_per_hour():
+    rain = get_particle_variable("rainPerHour")
+    return round(rain, 2)
+    
+def get_moon_illumination():
+    percent = get_particle_variable("moonIllume")
+    return round(percent,1)
 
 # ---------------------------- Skill Stuffs ------------------------------------
 def on_session_started(request, session):
@@ -70,9 +89,33 @@ def on_intent(request, session):
 # ---------------------------- Handlers ------------------------------------
 def handle_weather(intent, session):
     card_title = intent['name']
-    tempF = get_temp()
-
+    tempF = get_tempF()
+    rain  = get_rain_per_hour()
+    moon  = get_moon_illumination()
+    
     speech_output = "The current temperature is " + str(tempF) + " degrees."
+    
+    moon_statement = ""
+    # New Moon = 0%
+    if moon <= 0.5:
+        moon_statement = "Looks like a New Moon."
+    # Crescent < 50%
+    elif moon > 0.5 and moon < 50.0:
+        moon_statement = "We have a Crescent Moon tonight."
+    # Quarter = 50%
+    elif moon >= 50.0 and moon <= 50.9:
+        moon_statement = "The Moon is One Quarter Illuminated."
+    # Gibbous > 50%
+    elif moon > 50.9 and moon <= 99.5:
+        moon_statement = "We have a Gibbous Moon tonight."
+    # Full = 100%
+    elif moon > 99.5:
+        moon_statement = "Beware the Full Moon."
+
+    if rain >= 0.25:
+        speech_output += " It looks like it's been raining."
+        
+    speech_output += " " + moon_statement
 
     return build_response(
         None,
@@ -108,9 +151,6 @@ def weather_handler(event, context):
 
 # ---------------------------------- Main --------------------------------------
 if __name__ == "__main__":
-    # t = get_temp()
-    # print(t)
-
     event = {
         'request': {
             'type': "IntentRequest",
