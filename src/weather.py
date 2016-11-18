@@ -8,7 +8,6 @@ DEVICE_ID = "230040001847343338333633"
 ACCESS_TOKEN = "7b17fde278758834f69736682aedef21c8fb4cce"
 
 # --------------- Helpers that build all of the responses ----------------------
-
 def build_speechlet_response(title, output, reprompt_text, should_end_session):
     return {
         'outputSpeech': {
@@ -29,7 +28,6 @@ def build_speechlet_response(title, output, reprompt_text, should_end_session):
         'shouldEndSession': should_end_session
     }
 
-
 def build_response(session_attributes, speechlet_response):
     return {
         'version': '1.0',
@@ -40,7 +38,7 @@ def build_response(session_attributes, speechlet_response):
 # ----------------------- Do some REAL work ------------------------------------
 def get_particle_variable(name):
     resp = requests.get("%s/%s/%s?access_token=%s" % (PARTICLE_API, DEVICE_ID, name, ACCESS_TOKEN))
-    
+
     if resp.raise_for_status() == None:
         data = resp.json()
 
@@ -52,11 +50,11 @@ def get_particle_variable(name):
 def get_tempF():
     tempF = get_particle_variable("tempF")
     return round(tempF, 1)
-    
+
 def get_rain_per_hour():
     rain = get_particle_variable("rainPerHour")
     return round(rain, 2)
-    
+
 def get_moon_illumination():
     percent = get_particle_variable("moonIllume")
     return round(percent,1)
@@ -115,48 +113,48 @@ def handle_weather():
     rain = get_rain_per_hour()
     if rain >= 0.25:
         weather_statement += " It looks like it's been raining."
-    
-    moon_statement = handle_moon_phase()    
+
+    moon_statement = handle_moon_phase()
     weather_statement += " " + moon_statement
-    
+
     return (weather_statement)
-    
+
 def handle_temperature():
     tempF = get_tempF()
-    
+
     temperature_statement = "The current temperature is " + str(tempF) + " degrees."
-    
+
     return temperature_statement
 
 def handle_rainfall():
     rain = get_rain_per_hour()
-    
+
     if rain <= 0.25:
         rain_statement = "There has been no rainfall in the last hour."
     else:
         rain_statement = "It has rained %0.2f inches in the last hour." % (rain)
-        
+
     return rain_statement
-    
+
 def handle_moon_phase():
     moon = get_moon_illumination()
 
-    moon_statement = ""
+    moon_statement = "The Moon is %0.1f percent illuminated. " % (moon)
     # New Moon = 0%
     if moon <= 0.5:
-        moon_statement = "Looks like a New Moon."
+        moon_statement += "Looks like a New Moon."
     # Crescent < 50%
     elif moon > 0.5 and moon < 50.0:
-        moon_statement = "We have a Crescent Moon tonight."
+        moon_statement += "We have a Crescent Moon tonight."
     # Quarter = 50%
     elif moon >= 50.0 and moon <= 50.9:
-        moon_statement = "The Moon is One Quarter Illuminated."
+        moon_statement += "The Moon is One Quarter Illuminated."
     # Gibbous > 50%
     elif moon > 50.9 and moon <= 99.5:
-        moon_statement = "We have a Gibbous Moon tonight."
+        moon_statement += "We have a Gibbous Moon tonight."
     # Full = 100%
     elif moon > 99.5:
-        moon_statement = "Beware the Full Moon."
+        moon_statement += "Beware the Full Moon."
 
     return moon_statement
 
