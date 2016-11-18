@@ -54,6 +54,10 @@ def get_humidity():
 
 def get_tempF():
     tempF = get_particle_variable("tempF")
+    # My weather station's temperature is currently off by around 9 degrees b/c it
+    # does not get enough airflow. I'll just correct it here for now until I can
+    # figure out how to solve the airflow issue
+    tempF -= 9.0
     return round(tempF, 1)
 
 def get_pressure():
