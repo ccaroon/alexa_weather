@@ -1,6 +1,8 @@
 LIST_OF_ASPECTS
 ---------------
-weather
-temperature
-rainfall
+humidity
 moon phase
+pressure
+rainfall
+temperature
+weather

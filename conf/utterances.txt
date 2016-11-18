@@ -6,3 +6,7 @@ WeatherReport what's the current {aspect}
 WeatherReport what is the current {aspect}
 WeatherReport about the current {aspect}
 WeatherReport to tell me the current {aspect}
+WeatherReport for the {aspect}
+WeatherReport what the {aspect} is
+WeatherReport for the current {aspect}
+WeatherReport what the current {aspect} is
