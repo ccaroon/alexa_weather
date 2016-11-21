@@ -10,3 +10,9 @@ WeatherReport for the {aspect}
 WeatherReport what the {aspect} is
 WeatherReport for the current {aspect}
 WeatherReport what the current {aspect} is
+WeatherReport for the {aspect} report
+WeatherReport for the {aspect} information
+WeatherReport for the {aspect} info
+WeatherReport for the current {aspect} report
+WeatherReport for the current {aspect} information
+WeatherReport for the current {aspect} info

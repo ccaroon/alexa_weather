@@ -6,3 +6,4 @@ pressure
 rainfall
 temperature
 weather
+wind

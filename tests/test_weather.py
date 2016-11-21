@@ -30,7 +30,8 @@ class TestWeather(unittest.TestCase):
         "moon_phase": "New Moon|Crescent|Quarter|Gibbous|Full",
         "pressure": "pressure .*\d.\d inches of mercury",
         "rainfall": "no rainfall|\d.\d inches",
-        "temperature": "temperature .*\d.\d degrees"
+        "temperature": "temperature .*\d.\d degrees",
+        "wind": "wind .*\d.\d miles per hour"
     }
 
     # def setUp(self):
@@ -87,14 +88,23 @@ class TestWeather(unittest.TestCase):
     def test_weather(self):
         self.EVENT['request']['intent']['slots']['aspect']['value'] = "weather"
         result = weather.weather_handler(self.EVENT, {})
-        
+
         for name,pattern in self.test_patterns.iteritems():
             self.assertRegexpMatches(
                 result['response']['outputSpeech']['text'],
                 pattern,
                 name
             )
-            
+
+    def test_wind(self):
+        self.EVENT['request']['intent']['slots']['aspect']['value'] = "wind"
+        result = weather.weather_handler(self.EVENT, {})
+
+        self.assertRegexpMatches(
+            result['response']['outputSpeech']['text'],
+            self.test_patterns['wind']
+        )
+
     def test_incorrect_app_id(self):
         event = copy.deepcopy(self.EVENT)
         event['session']['application']['applicationId'] = "foo bar"

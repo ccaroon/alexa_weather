@@ -81,6 +81,10 @@ def get_moon_illumination():
     percent = get_particle_variable("moonIllume")
     return round(percent,1)
 
+def get_wind_speed_avg():
+    wind_speed = get_particle_variable("windSpeedAvg")
+    return round(wind_speed,1)
+
 # ---------------------------- Skill Stuffs ------------------------------------
 def on_session_started(request, session):
     pass
@@ -125,6 +129,8 @@ def handle_weather_report(intent, session):
         speech_output = handle_temperature()
     elif aspect == "weather":
         speech_output = handle_weather()
+    elif aspect == "wind":
+        speech_output = handle_wind()
     else:
         speech_output = "The WeatherStation does not know anything about " + str(aspect)
 
@@ -190,10 +196,29 @@ def handle_temperature():
 
     return temperature_statement
 
+def handle_wind():
+    wind_speed_avg = get_wind_speed_avg()
+
+    wind_stmt = "The average wind speed is %0.1f miles per hour." % (wind_speed_avg)
+
+    return wind_stmt
+
 # Report ALL aspects of the weather
 def handle_weather():
+    
+    weather_statement = "Currently"
+
     # Temperature
-    weather_statement = handle_temperature()
+    weather_statement += " the temperature is %0.1f degrees." % (get_tempF()) 
+    
+    # Humidity
+    weather_statement += " The relative humidity is %01.f percent." % (get_humidity())
+
+    # Pressure
+    weather_statement += " The pressure is at %0.1f inches of mercury." % (get_pressure())
+
+    # Wind
+    weather_statement += " The average wind speed is %0.1f miles per hour." % (get_wind_speed_avg())
 
     # Rainfall
     rain_h = get_rain_per_hour()
@@ -203,15 +228,9 @@ def handle_weather():
     rain_d = get_rain_per_day()
     if rain_d >= 0.25:
         weather_statement += " Total rain accumulation is %0.2f inches." % (rain_d)
-    
-    # Humidity
-    weather_statement += " " + handle_humidity()
-    
-    # Pressure
-    weather_statement += " " + handle_pressure()
 
     # Moon
-    weather_statement += " " + handle_moon_phase()
+    weather_statement += " and " + handle_moon_phase()
 
     return (weather_statement)
 
