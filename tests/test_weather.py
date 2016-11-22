@@ -27,7 +27,7 @@ class TestWeather(unittest.TestCase):
 
     test_patterns = {
         'humidity': "relative humidity .*\d.\d percent",
-        "moon_phase": "New Moon|Crescent|Quarter|Gibbous|Full",
+        "moon_phase": "new moon|crescent|quarter|gibbous|full moon",
         "pressure": "pressure .*\d.\d inches of mercury",
         "rainfall": "no rainfall|\d.\d inches",
         "temperature": "temperature .*\d.\d degrees",

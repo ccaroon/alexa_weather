@@ -147,32 +147,55 @@ def handle_humidity():
 # TODO: Add ability to determine Waxing and Waning
 def handle_moon_phase():
     moon = get_moon_illumination()
+    mDir = get_particle_variable("moonWaxWane")
 
-    illume_stmt = "at %0.1f percent illumination." % (moon)
+    wax_wane = ""
+    if mDir == 0:
+        wax_wane = "waning"
+    elif mDir == 1:
+        wax_wane = "waxing"
+
+    # illume_stmt = "at %0.1f percent illumination." % (moon)
 
     moon_statement = ""
     # New Moon = 0%
     if moon <= 0.5:
-        moon_statement += "Looks like a New Moon."
+        moon_statement = "Looks like a new moon."
     # Crescent < 50%
     elif moon > 0.5 and moon < 50.0:
-        moon_statement += "The Moon is Crescent " + illume_stmt
+        moon_statement = "The moon is a %s crescent." % (wax_wane)
     # Quarter = 50%
     elif moon >= 50.0 and moon <= 50.9:
-        moon_statement += "The Moon is One Quarter Illuminated."
+        quarter = ""
+        if wax_wane == "waning":
+            quarter = "third"
+        elif wax_wane == "waxing":
+            quarter = "first"
+
+        moon_statement = "The moon is in it's %s quarter." 
     # Gibbous > 50%
     elif moon > 50.9 and moon <= 99.5:
-        moon_statement += "The Moon is Gibbous " + illume_stmt
+        moon_statement = "The moon is a %s gibbous." % (wax_wane)
     # Full = 100%
     elif moon > 99.5:
-        moon_statement += "Beware the Full Moon."
+        moon_statement = "Looks like a full moon."
 
     return moon_statement
 
 # TODO: Add ability to determine Rising for Falling
 def handle_pressure():
     pressure = get_pressure()
-    pressure_stmt = "The pressure is currently at %0.1f inches of mercury." % (pressure)
+    
+    direction = ""
+    pDir = get_particle_variable("pressureDir")
+    if pDir == -1:
+        direction = "falling"
+    elif pDir == 0:
+        direction = "holding steady"
+    elif pDir == 1:
+        direction = "rising"
+        
+    pressure_stmt = "The pressure is currently at %0.1f inches of mercury and %s." % (pressure, direction)
     return (pressure_stmt)
 
 def handle_rainfall():
@@ -212,10 +235,18 @@ def handle_weather():
     weather_statement += " the temperature is %0.1f degrees." % (get_tempF()) 
     
     # Humidity
-    weather_statement += " The relative humidity is %01.f percent." % (get_humidity())
+    weather_statement += " The relative humidity is %0.1f percent." % (get_humidity())
 
     # Pressure
-    weather_statement += " The pressure is at %0.1f inches of mercury." % (get_pressure())
+    direction = ""
+    pDir = get_particle_variable("pressureDir")
+    if pDir == -1:
+        direction = "falling"
+    elif pDir == 0:
+        direction = "holding steady"
+    elif pDir == 1:
+        direction = "rising"
+    weather_statement += " The pressure is at %0.1f inches of mercury and %s." % (get_pressure(), direction)
 
     # Wind
     weather_statement += " The average wind speed is %0.1f miles per hour." % (get_wind_speed_avg())
