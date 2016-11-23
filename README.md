@@ -9,6 +9,7 @@ An Alexa Skill to get the Weather from My Local Weather Station
 3. Install "requests"
     - `pip install requests`
 4. Create a file named `secrets.py` with these contents (See `secrets.py.dist`):
+
         # Particle Device ID
         DEVICE_ID = "YOUR_PARTICLE_DEVICE_ID"
 
