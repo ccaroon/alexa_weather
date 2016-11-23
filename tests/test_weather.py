@@ -1,6 +1,7 @@
 import copy
 import unittest
 import weather
+import secrets
 
 class TestWeather(unittest.TestCase):
 
@@ -20,7 +21,7 @@ class TestWeather(unittest.TestCase):
         'session': {
             'new': True,
             'application': {
-                'applicationId': 'amzn1.ask.skill.595fb06b-9e5b-481e-bfd1-c137e1d5023c'
+                'applicationId': secrets.APPLICATION_ID
             }
         }
     }

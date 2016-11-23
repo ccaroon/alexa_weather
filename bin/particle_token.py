@@ -61,7 +61,7 @@ def list_tokens(args):
     return resp.text
 
 def delete_token(args):
-    '''DEL https://api.particle.io/v1/access_tokens/TOKEN -ucraig@caroon.org:zietAm!!'''
+    '''DEL https://api.particle.io/v1/access_tokens/TOKEN -uUSER:PASS'''
     
     if args.token == None:
         raise ValueError("Must specify a token to delete with -t|--token")
