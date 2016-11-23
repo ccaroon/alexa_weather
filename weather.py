@@ -2,11 +2,9 @@
 
 from __future__ import print_function
 import requests
+import secrets
 
 PARTICLE_API = "https://api.particle.io/v1/devices"
-DEVICE_ID = "230040001847343338333633"
-ACCESS_TOKEN = "7b17fde278758834f69736682aedef21c8fb4cce"
-APPLICATION_ID = "amzn1.ask.skill.595fb06b-9e5b-481e-bfd1-c137e1d5023c"
 
 # --------------- Helpers that build all of the responses ----------------------
 def build_speechlet_response(title, output, reprompt_text, should_end_session):
@@ -38,7 +36,7 @@ def build_response(session_attributes, speechlet_response):
 
 # ----------------------- Do some REAL work ------------------------------------
 def get_particle_variable(name):
-    resp = requests.get("%s/%s/%s?access_token=%s" % (PARTICLE_API, DEVICE_ID, name, ACCESS_TOKEN))
+    resp = requests.get("%s/%s/%s?access_token=%s" % (PARTICLE_API, secrets.DEVICE_ID, name, secrets.ACCESS_TOKEN))
 
     if resp.raise_for_status() == None:
         data = resp.json()
@@ -279,7 +277,7 @@ def handle_session_ended():
 # ------------------------------ Lambda Main -----------------------------------
 def weather_handler(event, context):
 
-    if (event['session']['application']['applicationId'] != APPLICATION_ID):
+    if (event['session']['application']['applicationId'] != secrets.APPLICATION_ID):
         raise ValueError("Invalid Application ID")
 
     if event['session']['new']:
