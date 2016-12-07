@@ -170,7 +170,7 @@ def handle_moon_phase():
         elif wax_wane == "waxing":
             quarter = "first"
 
-        moon_statement = "The moon is in it's %s quarter." 
+        moon_statement = "The moon is in it's %s quarter." % (quarter)
     # Gibbous > 50%
     elif moon > 50.9 and moon <= 99.5:
         moon_statement = "The moon is a %s gibbous." % (wax_wane)
