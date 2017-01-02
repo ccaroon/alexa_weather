@@ -61,7 +61,7 @@ def get_tempF():
 def get_pressure():
     # Pascals
     pressure_pa = get_particle_variable("pressurePa")
-    
+
     # Convert to Inches of Mercury
     pressure_inhg = pressure_pa * 0.0002953
 
@@ -70,7 +70,7 @@ def get_pressure():
 def get_rain_per_hour():
     rain = get_particle_variable("rainPerHour")
     return round(rain, 2)
-    
+
 def get_rain_per_day():
     rain = get_particle_variable("rainPerDay")
     return round(rain, 2)
@@ -183,7 +183,7 @@ def handle_moon_phase():
 # TODO: Add ability to determine Rising for Falling
 def handle_pressure():
     pressure = get_pressure()
-    
+
     direction = ""
     pDir = get_particle_variable("pressureDir")
     if pDir == -1:
@@ -192,7 +192,7 @@ def handle_pressure():
         direction = "holding steady"
     elif pDir == 1:
         direction = "rising"
-        
+
     pressure_stmt = "The pressure is currently at %0.1f inches of mercury and %s." % (pressure, direction)
     return (pressure_stmt)
 
@@ -200,12 +200,14 @@ def handle_rainfall():
     rain_h = get_rain_per_hour()
     rain_d = get_rain_per_day()
 
-    if rain_h < 0.25:
-        rain_statement = "There has been no rainfall in the last hour."
+    if rain_d < 0.25:
+        rain_statement = "There has been no significant rainfall today."
     else:
-        rain_statement = "It has rained %0.2f inches in the last hour." % (rain_h)
+        if rain_h >= 0.055:
+            rain_statement = "It has rained %0.2f inches in the last hour." % (rain_h)
+        else:
+            rain_statement = "There has been no significant rainfall in the last hour."
 
-    if rain_d >= 0.25:
         rain_statement += " Today's total rain accumulation is %0.2f inches." % (rain_d)
 
     return rain_statement
@@ -226,12 +228,12 @@ def handle_wind():
 
 # Report ALL aspects of the weather
 def handle_weather():
-    
+
     weather_statement = "Currently"
 
     # Temperature
-    weather_statement += " the temperature is %0.1f degrees." % (get_tempF()) 
-    
+    weather_statement += " the temperature is %0.1f degrees." % (get_tempF())
+
     # Humidity
     weather_statement += " The relative humidity is %0.1f percent." % (get_humidity())
 
@@ -253,7 +255,7 @@ def handle_weather():
     rain_h = get_rain_per_hour()
     if rain_h >= 0.25:
         weather_statement += " It looks like it's been raining."
-        
+
     rain_d = get_rain_per_day()
     if rain_d >= 0.25:
         weather_statement += " Total rain accumulation is %0.2f inches." % (rain_d)
