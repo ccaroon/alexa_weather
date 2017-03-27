@@ -41,7 +41,7 @@ def get_particle_variable(name):
     if resp.raise_for_status() == None:
         data = resp.json()
 
-    if data['error'] != None:
+    if 'error' in data and data['error'] != None:
         raise ValueError("Failed to retrieve value for %s: %s" % (name, data['error']))
 
     return(data['result'])
