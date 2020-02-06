@@ -2,23 +2,13 @@
 An Alexa Skill to get the Weather from My Local Weather Station
 
 ## Setup
-1. Create a Python 2.7.x virtual environment
+1. Create a Python 3.8.x virtual environment
     - `virtualenv -p /path/to/python venv`
 2. Activate the Virtual Environment
     - `. venv/bin/active`
-3. Install "requests"
-    - `pip install requests`
-4. Create a file named `secrets.py` with these contents (See `secrets.py.dist`):
-
-        # Particle Device ID
-        DEVICE_ID = "YOUR_PARTICLE_DEVICE_ID"
-
-        # A Particle Cloud Access Token
-        # See `bin/particle_token.py`
-        ACCESS_TOKEN = "VALID_PARTICLE_ACCESS_TOKEN"
-
-        # Amazon Skill Application ID
-        APPLICATION_ID = "YOUR_ASK_APPLICATION_ID"
+3. Install dependencies
+    - `pip install -r requirements.txt`
+4. Create a `secrets.py` file. See `secrets.py.dist`.
 5. Test
     - `make test`
 
