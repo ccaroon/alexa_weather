@@ -33,6 +33,12 @@ package:
 # 	cd package && zip -r ../alexa_weather_package.zip * && cd ..
 # 	rm -rf package/
 
+flask-ask:
+	. venv/bin/activate
+	git clone https://github.com/johnwheeler/flask-ask.git
+	cp doc/flask-ask-reqs.txt flask-ask/requirements.txt
+	cd flask-ask && python ./setup.py install
+
 clean:
 	rm -f alexa_weather.zip
 	rm -f *.pyc
