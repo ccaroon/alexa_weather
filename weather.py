@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import pprint
 
 from flask import Flask, render_template
 from flask_ask import Ask, statement, question
@@ -9,14 +10,35 @@ from adafruit_io import AdafruitIO
 
 app = Flask(__name__)
 app.config['ASK_APPLICATION_ID'] = secrets.APPLICATION_ID
-
 ask = Ask(app, '/')
 
+VALID_ASPECTS = ['temperature', 'humidity']
+
+aio = AdafruitIO(secrets.AIO_USERNAME, secrets.AIO_KEY, "weather-station")
+# ------------------------------------------------------------------------------
 @ask.intent('WeatherReport')
 def weather_report(aspect):
-    text = render_template('test', aspect=aspect)
-    # text = F"You asked for the {aspect}."
-    return statement(text).simple_card('Weather Report', text)
+    if aspect in VALID_ASPECTS:
+        response = handle_generic(aspect)
+    else:
+        response = handle_unknown(aspect)
+
+    return statement(response).simple_card('Weather Report', response)
+
+def handle_generic(aspect):
+    text = None
+
+    data = aio.get_data(aspect)
+    if data.get('success', False):
+        value = data['results'][0]['value']
+        text = render_template(aspect, value=value)
+    else:
+        text = render_template('error', error_code=data['code'], error_msg=data['msg'])
+
+    return text
+
+def handle_unknown(aspect):
+    return render_template('unknown', aspect=aspect)
 
 @ask.intent('AMAZON.HelpIntent')
 def help():
@@ -26,10 +48,11 @@ def help():
 @ask.session_ended
 def session_ended():
     return "{}", 200
-
+# ------------------------------------------------------------------------------
+# AWS Lambda Entry Point
 def weather_handler(event, context):
     return ask.run_aws_lambda(event)
-
+# ------------------------------------------------------------------------------
 if __name__ == '__main__':
     # Allow setting request verification to FALSE for testing purposes.
     if 'ASK_VERIFY_REQUESTS' in os.environ:
@@ -37,5 +60,4 @@ if __name__ == '__main__':
             if verify == 'false':
                 app.config['ASK_VERIFY_REQUESTS'] = False
 
-    # app.config['ASK_APPLICATION_ID'] = secrets.APPLICATION_ID
     app.run(debug=True)

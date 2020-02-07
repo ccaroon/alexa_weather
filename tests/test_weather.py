@@ -4,7 +4,6 @@ import weather
 import secrets
 import pprint
 class TestWeather(unittest.TestCase):
-
     EVENT = {
         'request': {
             'type': "IntentRequest",
@@ -26,14 +25,10 @@ class TestWeather(unittest.TestCase):
         }
     }
 
-    # test_patterns = {
-    #     'humidity': "relative humidity .*\d.\d percent",
-    #     "moon_phase": "new moon|crescent|quarter|gibbous|full moon",
-    #     "pressure": "pressure .*\d.\d inches of mercury",
-    #     "rainfall": "no significant rainfall|\d.\d inches",
-    #     "temperature": "temperature .*\d.\d degrees",
-    #     "wind": "wind .*\d.\d miles per hour"
-    # }
+    test_patterns = {
+        'humidity': "humidity is currently \d+ percent",
+        "temperature": "temperature is currently \d+ degrees",
+    }
 
     # def setUp(self):
     #     print("setup")
@@ -41,16 +36,29 @@ class TestWeather(unittest.TestCase):
     # def tearDown(self):
     #     print("teardown")
 
-    def test_something(self):
-        self.EVENT['request']['intent']['slots']['aspect']['value'] = "something"
-        result = weather.weather_handler(self.EVENT, {})
 
-        # pprint.pprint(result)
-        self.assertEqual(result['response']['outputSpeech']['text'], "You asked for the something.")
-        # self.assertRegexpMatches(
-        #     result['response']['outputSpeech']['text'],
-        #     self.test_patterns['humidity']
-        # )
+    def test_unknown(self):
+        self.EVENT['request']['intent']['slots']['aspect']['value'] = "giant frog fish"
+        result = weather.weather_handler(self.EVENT, {})
+        self.assertEqual(result['response']['outputSpeech']['text'], "The weather station does not know anything about giant frog fish.")
+
+    def test_temperature(self):
+        self.EVENT['request']['intent']['slots']['aspect']['value'] = "temperature"
+        result = weather.weather_handler(self.EVENT, {})
+        
+        self.assertRegexpMatches(
+            result['response']['outputSpeech']['text'],
+            self.test_patterns['temperature']
+        )
+
+    def test_humidity(self):
+        self.EVENT['request']['intent']['slots']['aspect']['value'] = "humidity"
+        result = weather.weather_handler(self.EVENT, {})
+        
+        self.assertRegexpMatches(
+            result['response']['outputSpeech']['text'],
+            self.test_patterns['humidity']
+        )
 
     # def test_incorrect_app_id(self):
     #     event = copy.deepcopy(self.EVENT)

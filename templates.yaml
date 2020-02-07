@@ -1,2 +1,5 @@
 ---
-test: You asked for the {{ aspect }}.
+error: Error. {{ error_code }}. {{ error_msg }}.
+unknown: The weather station does not know anything about {{ aspect }}.
+humidity: The relative humidity is currently {{ value }} percent.
+temperature: The temperature is currently {{ value }} degrees.
