@@ -94,3 +94,4 @@ package/
 secrets.py
 
 .vscode/
+flask-ask/
