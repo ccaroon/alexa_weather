@@ -34,5 +34,6 @@ clean:
 	rm -f *.pyc
 	rm -rf cover
 	rm -f coverage.xml
+	rm -rf flask-ask
 
 .PHONY: test package clean
