@@ -14,8 +14,8 @@ ask = Ask(app, '/')
 
 @ask.intent('WeatherReport')
 def weather_report(aspect):
-    # text = render_template('test', aspect=aspect)
-    text = F"You asked for the {aspect}."
+    text = render_template('test', aspect=aspect)
+    # text = F"You asked for the {aspect}."
     return statement(text).simple_card('Weather Report', text)
 
 @ask.intent('AMAZON.HelpIntent')

@@ -17,6 +17,8 @@ test any other versions of python.
 It claims to be v0.9.7 (As seen in the `setup.py` file).
 
 ### Work-A-Round
+NOTE: The command `make flask-ask` will try to perform these steps for you.
+
 I managed to get Flask-Ask to install by:
 
 1. Checkout the code from GitHub: `git clone https://github.com/johnwheeler/flask-ask.git`
