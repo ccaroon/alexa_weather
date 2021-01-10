@@ -9,7 +9,7 @@ class AdafruitIO:
         self.__group_name = group
 
     def get_data(self, feed, **kwargs):
-        feed_name = "%s.%s" % (self.__group_name, feed)
+        feed_name = F"{self.__group_name}.{feed}"
 
         limit = kwargs.get('limit', 1)
         fields = ['value']

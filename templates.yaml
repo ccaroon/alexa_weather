@@ -1,5 +1,7 @@
 ---
-error: Error. {{ error_code }}. {{ error_msg }}.
+error: "{{ feed }} error. {{ error_code }}. {{ error_msg }}."
 unknown: The weather station does not know anything about {{ aspect }}.
 humidity: The relative humidity is currently {{ value }} percent.
+humidity_old: The relative humidity was {{ value }} percent {{ age }}.
 temperature: The temperature is currently {{ value }} degrees.
+temperature_old: The temperature was {{ value }} degrees {{ age }}.

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import arrow
 import os
 import pprint
 
@@ -27,13 +28,20 @@ def weather_report(aspect):
 
 def handle_generic(aspect):
     text = None
+    now = arrow.now()
 
-    data = aio.get_data(aspect)
+    data = aio.get_data(aspect, fields=['created_at'])
     if data.get('success', False):
         value = data['results'][0]['value']
-        text = render_template(aspect, value=value)
+        # "created_at": "2021-01-10T16:50:37.095Z"
+        created_at = arrow.get(data['results'][0]['created_at'])
+        data_age = now - created_at
+        if data_age.total_seconds() > 60 * 5:
+            text = render_template(F"{aspect}_old", value=value, age=created_at.humanize())
+        else:
+            text = render_template(aspect, value=value)
     else:
-        text = render_template('error', error_code=data['code'], error_msg=data['msg'])
+        text = render_template('error', feed=data['feed'], error_code=data['code'], error_msg=data['msg'])
 
     return text
 
