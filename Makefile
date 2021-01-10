@@ -17,11 +17,16 @@ secrets.py:
 
 package: alexa_weather.zip
 
-alexa_weather.zip: *.py package-excludes.lst templates.yaml
-	cd venv/lib/python3.8/site-packages && zip -r9 /tmp/alexa_weather.zip . -x@${ROOT}/package-excludes.lst
-	zip -g /tmp/alexa_weather.zip *.py templates.yaml
-	mv /tmp/alexa_weather.zip .
-	cp ./alexa_weather.zip ~/
+alexa_weather.zip: flask-ask *.py templates.yaml
+	rm -f alexa_weather.zip
+	pip install --target ./package -r requirements.txt
+	cd flask-ask && pip install . --target ../package
+	cp *.py templates.yaml package/
+	cd package && zip -r ../alexa_weather.zip * && cd ..
+	rm -rf package/
+
+upload: alexa_weather.zip
+	aws --profile the-weather-man lambda update-function-code --function-name TheWeatherMan --zip-file fileb://alexa_weather.zip
 
 flask-ask:
 	. venv/bin/activate

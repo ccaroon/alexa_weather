@@ -1,8 +1,0 @@
-pip*
-setuptools*
-wheel*
-pycparser*
-__pycache__/*
-pkg_resources/*
-nose*
-coverage*
