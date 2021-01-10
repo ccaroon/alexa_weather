@@ -1,28 +1,30 @@
 # alexa_weather
 An Alexa Skill to get the Weather from My Local Weather Station
 
+## Info
+* [AWS Lambda Docs](https://docs.aws.amazon.com/lambda/index.html)
+
 ## Setup
-1. Create a Python 2.7.x virtual environment
-    - `virtualenv -p /path/to/python venv`
-2. Activate the Virtual Environment
+1. Create a Python 3.8.x virtual environment
+    - `python -mvenv venv`
+1. Activate the Virtual Environment
     - `. venv/bin/active`
-3. Install "requests"
-    - `pip install requests`
-4. Create a file named `secrets.py` with these contents (See `secrets.py.dist`):
-
-        # Particle Device ID
-        DEVICE_ID = "YOUR_PARTICLE_DEVICE_ID"
-
-        # A Particle Cloud Access Token
-        # See `bin/particle_token.py`
-        ACCESS_TOKEN = "VALID_PARTICLE_ACCESS_TOKEN"
-
-        # Amazon Skill Application ID
-        APPLICATION_ID = "YOUR_ASK_APPLICATION_ID"
-5. Test
+2. Install dependencies
+    1. libs
+        * YAML and YAML-Dev (May be needed by `PyYaml`)
+            - Fedora/CentOS: `sudo yum install libyaml libyaml-devel`
+            - Deb/Ubuntu: `sudo apt install libyaml-dev`
+    2. pip
+        * `pip install -r requirements-dev.txt`
+        * Read [Flask-Ask](./doc/flask-ask.md) doc.
+        * `make flask-ask`
+1. Create a `secrets.py` file. See `secrets.py.dist`.
+2. Test
     - `make test`
 
 ## Packaging for AWS Lambda
+[Detailed Information](https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html)
+
 1. Build the package (zip file)
     - `make package`
 2. Upload to Lambda via AWS Console
