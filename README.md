@@ -3,10 +3,11 @@ An Alexa Skill to get the Weather from My Local Weather Station
 
 ## Info
 * [AWS Lambda Docs](https://docs.aws.amazon.com/lambda/index.html)
+* [ASK SDK for Python](https://developer.amazon.com/en-US/docs/alexa/alexa-skills-kit-sdk-for-python/overview.html)
 
 ## Setup
-1. Create a Python 3.8.x virtual environment
-    - `python -mvenv venv`
+1. Create a Python 3.12.x virtual environment
+    - `python3.12 -mvenv venv`
 2. Activate the Virtual Environment
     - `. venv/bin/active`
 3. Install dependencies
@@ -16,8 +17,6 @@ An Alexa Skill to get the Weather from My Local Weather Station
             - Deb/Ubuntu: `sudo apt install libyaml-dev`
     2. pip
         * `pip install -r requirements-dev.txt`
-        * Read [Flask-Ask](./doc/flask-ask.md) doc.
-        * `make flask-ask`
 4. Create a `secrets.py` file. See `secrets.py.dist`.
 5. Test
     - `make test`

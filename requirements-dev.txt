@@ -1,4 +1,4 @@
 -r requirements.txt
-coverage
-mock
-nose
+coverage ~= 7.5
+nose2 ~= 0.13.0
+invoke ~= 2.2

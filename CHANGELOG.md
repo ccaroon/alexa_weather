@@ -1,6 +1,11 @@
 # CHANGELOG
 
-## v1.1.0 - "v1.1.0" - [2021-??-??]
+## 2024-05-05
+* Updated to use Python 3.12 since Python 3.8 is deprecated on AWS
+* Ditched `flask-ask` (way old and not working) for "AWS Ask SDK for Python"
+* Ported `Makefile` to `invoke`.
+
+## v1.1.0 - "v1.1.0" - [2021-01-10]
 ### Features
 * [2021-01-10]
   * If the retrieved weather data is more than 5 minutes old, the Alexa response will say how old it is.
