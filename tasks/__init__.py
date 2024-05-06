@@ -4,6 +4,11 @@ import build
 import check
 import install
 
+@task(pre=[build.clean, check.clean])
+def clean(ctx):
+    """ Cleanup All the Things """
+    pass
+
 @task
 def env(ctx):
     """
@@ -13,6 +18,7 @@ def env(ctx):
 
 
 namespace = Collection(
+    clean,
     build,
     check,
     install,

@@ -1,5 +1,5 @@
 import os
-
+import shutil
 
 PACKAGE = {
     "name": "alexa_weather.zip",
@@ -11,6 +11,16 @@ PACKAGE = {
     ],
     "dir": "./package/"
 }
+
+
+def clean(files):
+    for item in files:
+        if os.path.isfile(item):
+            print(f"=> Removing File: {item}...")
+            os.unlink(item)
+        elif os.path.isdir(item):
+            print(f"=> Removing Dir: {item}...")
+            shutil.rmtree(item)
 
 
 def is_newer(file1, file2):

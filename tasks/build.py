@@ -5,6 +5,11 @@ from invoke import task
 
 import helper
 
+BUILD_DETRITUS = [
+    helper.PACKAGE["name"],
+    helper.PACKAGE["dir"],
+    "__pycache__/"
+]
 
 @task
 def secrets(ctx):
@@ -46,19 +51,7 @@ def package(ctx):
         shutil.rmtree(helper.PACKAGE["dir"])
 
 
-LAUNDRY_LIST = [
-    helper.PACKAGE["name"],
-    "__pycache__/",
-    "cover/",
-    "coverage.xml"
-]
 @task
 def clean(ctx):
-    """ Cleanup Build Artifacts """
-    for item in LAUNDRY_LIST:
-        if os.path.isfile(item):
-            print(f"=> Removing File: {item}...")
-            os.unlink(item)
-        elif os.path.isdir(item):
-            print(f"=> Removing Dir: {item}...")
-            shutil.rmtree(item)
+    """ Cleanup Build Detritus """
+    helper.clean(BUILD_DETRITUS)
