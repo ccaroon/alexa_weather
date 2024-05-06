@@ -6,6 +6,7 @@ import unittest.mock
 from ask_sdk_model.slot import Slot
 from ask_sdk_model.intent import Intent
 from ask_sdk_model.intent_request import IntentRequest
+from ask_sdk_model.launch_request import LaunchRequest
 from ask_sdk_model.request_envelope import RequestEnvelope
 from ask_sdk_core.handler_input import HandlerInput
 
@@ -13,7 +14,7 @@ import weather_station
 
 from mocks import MockResponse
 
-class TestWeather(unittest.TestCase):
+class TestWeatherStation(unittest.TestCase):
     SLOTS = {
         "temperature": Slot(name="aspect", value="temperature"),
         "humidity": Slot(name="aspect", value="humidity"),
@@ -42,6 +43,17 @@ class TestWeather(unittest.TestCase):
             RequestEnvelope(request=request)
         )
         return handler_input
+
+    def test_launch_request(self):
+        handler_input = HandlerInput(
+            RequestEnvelope(request=LaunchRequest())
+        )
+
+        result = weather_station.launch_request_handler(handler_input)
+        self.assertRegex(
+            result.output_speech.ssml,
+            r"Welcome to The Weather Station Version \d\.\d\.\d"
+        )
 
     def test_unknown(self):
         handler_input = self.__build_handler_input("unknown")
