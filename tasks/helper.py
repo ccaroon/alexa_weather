@@ -1,5 +1,18 @@
 import os
 
+
+PACKAGE = {
+    "name": "alexa_weather.zip",
+    "files": [
+        "adafruit_io.py",
+        "secrets.py",
+        "weather.py",
+        "templates.yaml"
+    ],
+    "dir": "./package/"
+}
+
+
 def is_newer(file1, file2):
     """
     Is `file1` newer than `file2`?
