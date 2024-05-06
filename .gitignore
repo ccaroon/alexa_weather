@@ -9,5 +9,6 @@ coverage.xml
 *.zip
 package/
 secrets.py
+.last-upload
 
 .vscode/

@@ -1,3 +1,4 @@
+import os
 from invoke import task
 
 import helper
@@ -18,4 +19,6 @@ def aws_cli(ctx):
 @task(pre=[aws_cli, build.package])
 def upload(ctx, profile="the-weather-man"):
     """ Upload the Zip Package to AWS Lambda """
-    ctx.run(f"aws --profile {profile} lambda update-function-code --function-name TheWeatherMan --zip-file fileb://{helper.PACKAGE['name']}")
+    if not os.path.exists(".last-upload") or helper.is_newer(helper.PACKAGE['name'], ".last-upload"):
+        ctx.run(f"aws --profile {profile} lambda update-function-code --function-name TheWeatherMan --zip-file fileb://{helper.PACKAGE['name']}")
+        ctx.run("touch .last-upload")
