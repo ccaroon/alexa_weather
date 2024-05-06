@@ -34,7 +34,7 @@ class TestWeather(unittest.TestCase):
         intent = Intent(
             "WeatherReport",
             slots={
-             "aspect": self.SLOTS.get(aspect)
+                "aspect": self.SLOTS.get(aspect)
             }
         )
         request = IntentRequest(intent=intent)
