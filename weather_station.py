@@ -2,11 +2,12 @@
 import arrow
 
 from ask_sdk_core.skill_builder import SkillBuilder
-from ask_sdk_core.utils import is_intent_name
+from ask_sdk_core.utils import is_intent_name, is_request_type
 from ask_sdk_model.ui import SimpleCard
 
-import secrets
 from adafruit_io import AdafruitIO
+import secrets
+import version
 
 VALID_ASPECTS = ['temperature', 'humidity']
 
@@ -21,6 +22,18 @@ SPEECH_TEMPLATES = {
 
 sb = SkillBuilder()
 aio = AdafruitIO(secrets.AIO_USERNAME, secrets.AIO_KEY, "weather-station")
+# ------------------------------------------------------------------------------
+@sb.request_handler(can_handle_func=is_request_type("LaunchRequest"))
+def launch_request_handler(handler_input):
+    speech_text = f"Welcome to The Weather Station Version {version.VERSION}"
+
+    handler_input.response_builder.speak(
+        speech_text
+    ).set_card(
+        SimpleCard("Weather Station", speech_text)
+    ).set_should_end_session(False)
+    
+    return handler_input.response_builder.response
 # ------------------------------------------------------------------------------
 @sb.request_handler(can_handle_func=is_intent_name("WeatherReport"))
 def weather_report_handler(handler_input):
@@ -39,7 +52,7 @@ def weather_report_handler(handler_input):
     handler_input.response_builder.speak(
         speech_text
     ).set_card(
-        SimpleCard("Weather Report", speech_text)
+        SimpleCard("Weather Station", speech_text)
     ).set_should_end_session(True)
     
     return handler_input.response_builder.response

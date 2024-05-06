@@ -13,7 +13,7 @@ CHECK_DETRITUS = [
 FILES = [
     "adafruit_io.py",
     "secrets.py",
-    "weather_report.py"
+    "weather_station.py"
 ]
 @task(pre=[build.secrets])
 def coverage(ctx):

@@ -1,5 +1,5 @@
 # alexa_weather
-An Alexa Skill to get the Weather from My Local Weather Station
+An Alexa Skill to get Weather Data from My Local Weather Station
 
 ## Info
 * [AWS Lambda Docs](https://docs.aws.amazon.com/lambda/index.html)
@@ -8,23 +8,22 @@ An Alexa Skill to get the Weather from My Local Weather Station
 ## Setup
 1. Create a Python 3.12.x virtual environment
     - `python3.12 -mvenv venv`
+    - OR
+    - `pyenv virtualenv 3.12.2 alexa_weather`
 2. Activate the Virtual Environment
     - `. venv/bin/active`
+    - OR
+    - `pyenv local alexa_weather`
 3. Install dependencies
-    1. libs
-        * YAML and YAML-Dev (May be needed by `PyYaml`)
-            - Fedora/CentOS: `sudo yum install libyaml libyaml-devel`
-            - Deb/Ubuntu: `sudo apt install libyaml-dev`
-    2. pip
-        * `pip install -r requirements-dev.txt`
+    * `pip install -r requirements-dev.txt`
 4. Create a `secrets.py` file. See `secrets.py.dist`.
 5. Test
-    - `make test`
+    - `invoke check.coverage`
 
 ## Packaging for AWS Lambda
 [Detailed Information](https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html)
 
 1. Build the package (zip file)
-    - `make package`
+    - `inv build.package`
 2. Upload to Lambda
-    - `make upload`
+    - `inv install.upload`

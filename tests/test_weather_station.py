@@ -9,7 +9,7 @@ from ask_sdk_model.intent_request import IntentRequest
 from ask_sdk_model.request_envelope import RequestEnvelope
 from ask_sdk_core.handler_input import HandlerInput
 
-import weather_report
+import weather_station
 
 from mocks import MockResponse
 
@@ -45,7 +45,7 @@ class TestWeather(unittest.TestCase):
 
     def test_unknown(self):
         handler_input = self.__build_handler_input("unknown")
-        result = weather_report.weather_report_handler(handler_input)
+        result = weather_station.weather_report_handler(handler_input)
 
         self.assertRegex(
             result.output_speech.ssml,
@@ -61,7 +61,7 @@ class TestWeather(unittest.TestCase):
         mock_get.return_value = MockResponse(status=200, content=json.dumps(resp_content))
 
         handler_input = self.__build_handler_input("temperature")
-        result = weather_report.weather_report_handler(handler_input)
+        result = weather_station.weather_report_handler(handler_input)
 
         self.assertRegex(
             result.output_speech.ssml,
@@ -77,7 +77,7 @@ class TestWeather(unittest.TestCase):
         mock_get.return_value = MockResponse(status=200, content=json.dumps(resp_content))
 
         handler_input = self.__build_handler_input("temperature")
-        result = weather_report.weather_report_handler(handler_input)
+        result = weather_station.weather_report_handler(handler_input)
 
         self.assertRegex(
             result.output_speech.ssml,
@@ -93,7 +93,7 @@ class TestWeather(unittest.TestCase):
         mock_get.return_value = MockResponse(status=200, content=json.dumps(resp_content))
 
         handler_input = self.__build_handler_input("humidity")
-        result = weather_report.weather_report_handler(handler_input)
+        result = weather_station.weather_report_handler(handler_input)
 
         self.assertRegex(
             result.output_speech.ssml,
@@ -109,7 +109,7 @@ class TestWeather(unittest.TestCase):
         mock_get.return_value = MockResponse(status=200, content=json.dumps(resp_content))
 
         handler_input = self.__build_handler_input("humidity")
-        result = weather_report.weather_report_handler(handler_input)
+        result = weather_station.weather_report_handler(handler_input)
 
         self.assertRegex(
             result.output_speech.ssml,
@@ -124,7 +124,7 @@ class TestWeather(unittest.TestCase):
         mock_get.return_value = MockResponse(status=500, content=json.dumps(resp_content))
 
         handler_input = self.__build_handler_input("temperature")
-        result = weather_report.weather_report_handler(handler_input)
+        result = weather_station.weather_report_handler(handler_input)
 
         self.assertRegex(
             result.output_speech.ssml,

@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 2024-05-05
+## 2024-05-06 - 2.0.0
 * Updated to use Python 3.12 since Python 3.8 is deprecated on AWS
 * Ditched `flask-ask` (way old and not working) for "AWS Ask SDK for Python"
 * Ported `Makefile` to `invoke`.

@@ -6,8 +6,8 @@ PACKAGE = {
     "files": [
         "adafruit_io.py",
         "secrets.py",
-        "weather.py",
-        "templates.yaml"
+        "version.py",
+        "weather_station.py"
     ],
     "dir": "./package/"
 }
