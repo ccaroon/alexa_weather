@@ -1,5 +1,5 @@
 import arrow
-import json
+import requests_mock
 import unittest
 import unittest.mock
 
@@ -11,9 +11,9 @@ from ask_sdk_model.session_ended_request import SessionEndedRequest
 from ask_sdk_model.request_envelope import RequestEnvelope
 from ask_sdk_core.handler_input import HandlerInput
 
+import secrets
 import weather_station
-
-from mocks import MockResponse
+from adafruit_io import AdafruitIO
 
 class TestWeatherStation(unittest.TestCase):
     SLOTS = {
@@ -22,7 +22,7 @@ class TestWeatherStation(unittest.TestCase):
         "unknown": Slot(name="aspect", value="giant fish frog")
     }
 
-    test_patterns = {
+    TEST_PATTERNS = {
         'humidity': r"humidity is currently \d+ percent",
         'humidity_old': r"humidity was \d+ percent \d+ (minutes|hours|days|weeks|months) ago",
 
@@ -31,6 +31,10 @@ class TestWeatherStation(unittest.TestCase):
 
         "unknown": "does not know anything about giant fish frog"
     }
+
+
+    def __build_aio_url(self, aspect):
+        return f"{AdafruitIO.BASE_URL}/{secrets.AIO_USERNAME}/feeds/weather-station.{aspect}/data?limit=1&include=value,created_at"
 
 
     def __build_handler_input(self, aspect):
@@ -46,6 +50,113 @@ class TestWeatherStation(unittest.TestCase):
         )
         return handler_input
 
+
+    def test_unknown(self):
+        handler_input = self.__build_handler_input("unknown")
+        result = weather_station.weather_report_handler(handler_input)
+
+        self.assertRegex(
+            result.output_speech.ssml,
+            self.TEST_PATTERNS['unknown']
+        )
+
+
+    @requests_mock.Mocker()
+    def test_temperature(self, rmock):
+        rmock.register_uri(
+            'GET', self.__build_aio_url("temperature"),
+            json=[{
+                'value': 42,
+                'created_at': arrow.now().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            }]
+        )
+
+        handler_input = self.__build_handler_input("temperature")
+        result = weather_station.weather_report_handler(handler_input)
+
+        self.assertRegex(
+            result.output_speech.ssml,
+            self.TEST_PATTERNS['temperature']
+        )
+
+
+    @requests_mock.Mocker()
+    def test_temperature_old_data(self, rmock):
+        rmock.register_uri(
+            'GET', self.__build_aio_url("temperature"),
+            json=[{
+                'value': 42,
+                'created_at': arrow.now().shift(minutes=-7).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                }
+            ]
+        )
+
+        handler_input = self.__build_handler_input("temperature")
+        result = weather_station.weather_report_handler(handler_input)
+
+        self.assertRegex(
+            result.output_speech.ssml,
+            self.TEST_PATTERNS['temperature_old']
+        )
+
+
+    @requests_mock.Mocker()
+    def test_humidity(self, rmock):
+        rmock.register_uri(
+            'GET', self.__build_aio_url("humidity"),
+            json=[{
+                'value': 65,
+                'created_at': arrow.now().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            }]
+        )
+
+        handler_input = self.__build_handler_input("humidity")
+        result = weather_station.weather_report_handler(handler_input)
+
+        self.assertRegex(
+            result.output_speech.ssml,
+            self.TEST_PATTERNS['humidity']
+        )
+
+
+    @requests_mock.Mocker()
+    def test_humidity_old_data(self, rmock):
+        rmock.register_uri(
+            'GET', self.__build_aio_url("humidity"),
+            json=[{
+                'value': 65,
+                'created_at': arrow.now().shift(days=-2).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            }]
+        )
+
+        handler_input = self.__build_handler_input("humidity")
+        result = weather_station.weather_report_handler(handler_input)
+
+        self.assertRegex(
+            result.output_speech.ssml,
+            self.TEST_PATTERNS['humidity_old']
+        )
+
+
+    @requests_mock.Mocker()
+    def test_error(self, rmock):
+        aspect = "temperature"
+        err_msg = "AIO is down for maintenance"
+        rmock.register_uri(
+            'GET', self.__build_aio_url(aspect),
+            json={
+                'error': err_msg
+            },
+            status_code=500
+        )
+
+        handler_input = self.__build_handler_input(aspect)
+        result = weather_station.weather_report_handler(handler_input)
+
+        self.assertRegex(
+            result.output_speech.ssml,
+            F"weather-station.temperature error. 500. {err_msg}"
+        )
 
     def test_launch_request(self):
         handler_input = HandlerInput(
@@ -100,16 +211,6 @@ class TestWeatherStation(unittest.TestCase):
         self.assertIsNone(result.output_speech)
 
 
-    def test_unknown(self):
-        handler_input = self.__build_handler_input("unknown")
-        result = weather_station.weather_report_handler(handler_input)
-
-        self.assertRegex(
-            result.output_speech.ssml,
-            self.test_patterns['unknown']
-        )
-
-
     def test_all_exception_handler(self):
         handler_input = self.__build_handler_input("humidity")
         result = weather_station.all_exception_handler(handler_input, RuntimeError("Frog Blast the Vent Core!"))
@@ -117,88 +218,4 @@ class TestWeatherStation(unittest.TestCase):
         self.assertRegex(
             result.output_speech.ssml,
             "Sorry, I didn't get it. Can you please say it again!!"
-        )
-
-
-    @unittest.mock.patch('requests.get')
-    def test_temperature(self, mock_get):
-        resp_content = [{
-            'value': 42,
-            'created_at': arrow.now().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        }]
-        mock_get.return_value = MockResponse(status=200, content=json.dumps(resp_content))
-
-        handler_input = self.__build_handler_input("temperature")
-        result = weather_station.weather_report_handler(handler_input)
-
-        self.assertRegex(
-            result.output_speech.ssml,
-            self.test_patterns['temperature']
-        )
-
-
-    @unittest.mock.patch('requests.get')
-    def test_temperature_old_data(self, mock_get):
-        resp_content = [{
-            'value': 42,
-            'created_at': arrow.now().shift(minutes=-7).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        }]
-        mock_get.return_value = MockResponse(status=200, content=json.dumps(resp_content))
-
-        handler_input = self.__build_handler_input("temperature")
-        result = weather_station.weather_report_handler(handler_input)
-
-        self.assertRegex(
-            result.output_speech.ssml,
-            self.test_patterns['temperature_old']
-        )
-
-
-    @unittest.mock.patch('requests.get')
-    def test_humidity(self, mock_get):
-        resp_content = [{
-            'value': 65,
-            'created_at': arrow.now().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        }]
-        mock_get.return_value = MockResponse(status=200, content=json.dumps(resp_content))
-
-        handler_input = self.__build_handler_input("humidity")
-        result = weather_station.weather_report_handler(handler_input)
-
-        self.assertRegex(
-            result.output_speech.ssml,
-            self.test_patterns['humidity']
-        )
-
-
-    @unittest.mock.patch('requests.get')
-    def test_humidity(self, mock_get):
-        resp_content = [{
-            'value': 65,
-            'created_at': arrow.now().shift(days=-2).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        }]
-        mock_get.return_value = MockResponse(status=200, content=json.dumps(resp_content))
-
-        handler_input = self.__build_handler_input("humidity")
-        result = weather_station.weather_report_handler(handler_input)
-
-        self.assertRegex(
-            result.output_speech.ssml,
-            self.test_patterns['humidity_old']
-        )
-
-
-    @unittest.mock.patch('requests.get')
-    def test_error(self, mock_get):
-        resp_content = {
-            'error': "AIO is down for maintenance"
-        }
-        mock_get.return_value = MockResponse(status=500, content=json.dumps(resp_content))
-
-        handler_input = self.__build_handler_input("temperature")
-        result = weather_station.weather_report_handler(handler_input)
-
-        self.assertRegex(
-            result.output_speech.ssml,
-            F"weather-station.temperature error. 500. {resp_content['error']}"
         )
