@@ -27,7 +27,8 @@ aio = AdafruitIO(secrets.AIO_USERNAME, secrets.AIO_KEY, "weather-station")
 # ------------------------------------------------------------------------------
 @sb.request_handler(can_handle_func=is_request_type("LaunchRequest"))
 def launch_request_handler(handler_input):
-    speech_text = f"Welcome to The Weather Station Version {version.VERSION}"
+    vid = version.VERSION.replace(".", " dot ")
+    speech_text = f"Welcome to The Weather Station Version {vid}, {version.NAME}"
 
     handler_input.response_builder.speak(
         speech_text

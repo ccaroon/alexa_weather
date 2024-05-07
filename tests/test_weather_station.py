@@ -13,6 +13,7 @@ from ask_sdk_core.handler_input import HandlerInput
 
 import secrets
 import weather_station
+import version
 from adafruit_io import AdafruitIO
 
 class TestWeatherStation(unittest.TestCase):
@@ -166,7 +167,7 @@ class TestWeatherStation(unittest.TestCase):
         result = weather_station.launch_request_handler(handler_input)
         self.assertRegex(
             result.output_speech.ssml,
-            r"Welcome to The Weather Station Version \d\.\d\.\d"
+            rf"Welcome to The Weather Station Version \d dot \d dot \d, {version.NAME}"
         )
 
 
