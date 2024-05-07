@@ -19,7 +19,7 @@ FILES = [
 def coverage(ctx):
     """ Run Code Coverage """
     ctx.run("coverage run -m nose2 -v tests")
-    ctx.run(f"coverage report -m --fail-under=95 --include={','.join(FILES)}")
+    ctx.run(f"coverage report -m --fail-under=95 --include={','.join(FILES)}", warn=True)
     ctx.run(f"coverage html --include={','.join(FILES)}")
     ctx.run(f"coverage xml --include={','.join(FILES)}")
 

@@ -23,6 +23,8 @@ SPEECH_TEMPLATES = {
 sb = SkillBuilder()
 aio = AdafruitIO(secrets.AIO_USERNAME, secrets.AIO_KEY, "weather-station")
 # ------------------------------------------------------------------------------
+# LaunchRequest Handler
+# ------------------------------------------------------------------------------
 @sb.request_handler(can_handle_func=is_request_type("LaunchRequest"))
 def launch_request_handler(handler_input):
     speech_text = f"Welcome to The Weather Station Version {version.VERSION}"
@@ -34,6 +36,8 @@ def launch_request_handler(handler_input):
     ).set_should_end_session(False)
     
     return handler_input.response_builder.response
+# ------------------------------------------------------------------------------
+# WeatherReport Intent Handler
 # ------------------------------------------------------------------------------
 @sb.request_handler(can_handle_func=is_intent_name("WeatherReport"))
 def weather_report_handler(handler_input):
@@ -90,5 +94,57 @@ def request_weather_data(aspect):
         text = template.format_map(tmp_data)
 
     return text
+# ------------------------------------------------------------------------------
+# HelpIntent Handler
+# ------------------------------------------------------------------------------
+@sb.request_handler(can_handle_func=is_intent_name("AMAZON.HelpIntent"))
+def help_intent_handler(handler_input):
+    help_text = f"The Weather Station can report the following: {','.join(VALID_ASPECTS)}."
+    ask_text = "Ask me to 'get the temperature'."
+
+    handler_input.response_builder.speak(
+        help_text
+    ).ask(ask_text).set_card(
+        SimpleCard("Weather Station", help_text)
+    )
+    
+    return handler_input.response_builder.response
+# ------------------------------------------------------------------------------
+# Cancel/Stop Handler
+# ------------------------------------------------------------------------------
+@sb.request_handler(
+    can_handle_func=lambda handler_input :
+        is_intent_name("AMAZON.CancelIntent")(handler_input) or
+        is_intent_name("AMAZON.StopIntent")(handler_input))
+def cancel_and_stop_intent_handler(handler_input):
+    speech_text = "Thanks for using the Weather Station. Goodbye!"
+
+    handler_input.response_builder.speak(
+        speech_text
+    ).set_card(
+        SimpleCard("Weather Station", speech_text)
+    ).set_should_end_session(True)
+    
+    return handler_input.response_builder.response
+# ------------------------------------------------------------------------------
+# Session End Handler
+# ------------------------------------------------------------------------------
+@sb.request_handler(can_handle_func=is_request_type("SessionEndedRequest"))
+def session_ended_request_handler(handler_input):
+    # Any cleanup logic goes here
+    return handler_input.response_builder.response
+# ------------------------------------------------------------------------------
+# Session End Handler
+# ------------------------------------------------------------------------------
+@sb.exception_handler(can_handle_func=lambda i, e: True)
+def all_exception_handler(handler_input, exception):
+    # Log the exception in CloudWatch Logs
+    print(exception)
+
+    speech_text = "Sorry, I didn't get it. Can you please say it again!!"
+    handler_input.response_builder.speak(speech_text).ask(speech_text)
+    return handler_input.response_builder.response
+# ------------------------------------------------------------------------------
+# Create Lambda Handler
 # ------------------------------------------------------------------------------
 handler = sb.lambda_handler()
